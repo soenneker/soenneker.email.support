@@ -1,11 +1,15 @@
-﻿using Soenneker.Email.Support.Abstract;
+﻿using System;
+using Soenneker.Email.Support.Abstract;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Soenneker.Email.Dispatcher.Abstract;
 using Soenneker.Messages.Email;
 using Microsoft.Extensions.Configuration;
+using Soenneker.Enums.Email.Format;
+using Soenneker.Enums.Email.Priority;
 using Soenneker.Extensions.Configuration;
+using Soenneker.Utils.Environment;
 
 namespace Soenneker.Email.Support;
 
@@ -27,13 +31,20 @@ public sealed class EmailSupportUtil : IEmailSupportUtil
 
         var message = new EmailMessage
         {
+            Queue = "email",
+            Type = "email",
             To = [to],
             Subject = subject,
-
             Tokens = new Dictionary<string, string>
             {
                 { "bodyText", bodyHtml }
-            }
+            },
+            Id = Guid.NewGuid()
+                     .ToString(),
+            CreatedAt = DateTimeOffset.UtcNow,
+            Sender = EnvironmentUtil.GetMachineName(),
+            Format = EmailFormat.Html,
+            Priority = EmailPriority.Normal
         };
 
         return _emailDispatcher.Dispatch(message, cancellationToken);
