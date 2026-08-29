@@ -9,11 +9,11 @@ namespace Soenneker.Email.Support.Abstract;
 public interface IEmailSupportUtil
 {
     /// <summary>
-    /// Executes the send operation.
+    /// Sends email Support.
     /// </summary>
-    /// <param name="subject">The subject.</param>
-    /// <param name="bodyHtml">The body html.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <param name="subject">Subject for the send operation.</param>
+    /// <param name="bodyHtml">Body HTML for the send operation.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the send operation is complete.</returns>
     ValueTask Send(string subject, string bodyHtml, CancellationToken cancellationToken = default);
 }
