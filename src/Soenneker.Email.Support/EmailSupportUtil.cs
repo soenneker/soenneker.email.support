@@ -13,7 +13,6 @@ using Soenneker.Utils.Environment;
 
 namespace Soenneker.Email.Support;
 
-/// <inheritdoc cref="IEmailSupportUtil"/>
 public sealed class EmailSupportUtil : IEmailSupportUtil
 {
     private readonly IEmailDispatcher _emailDispatcher;

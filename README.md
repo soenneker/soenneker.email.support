@@ -5,7 +5,7 @@
 
 # Soenneker.Email.Support
 
-A utility that allows for quick access to support email sending.
+Sends a subject and HTML body to the application's configured support address through `IEmailDispatcher`.
 
 ## Install
 
@@ -13,31 +13,47 @@ A utility that allows for quick access to support email sending.
 dotnet add package Soenneker.Email.Support
 ```
 
-## Quick start
+## Configuration
 
-```csharp
-using Soenneker.Email.Support.Registrars;
-using Microsoft.Extensions.DependencyInjection;
-
-var services = new ServiceCollection();
-var result = services.AddEmailSupportUtilAsSingleton();
+```json
+{
+  "Email": {
+    "SupportAddress": "support@example.com"
+  }
+}
 ```
 
-Adds `IEmailSupportUtil` as a singleton service.
+`Email:SupportAddress` is required and is read for each send. The dispatcher and selected sender also require their own configuration.
 
-## What you get
+## Registration
 
-- `IEmailSupportUtil` — A utility that allows for quick access to support email sending.
-- `EmailSupportUtilRegistrar` — A utility that allows for quick access to support email sending.
+Register an `IEmailSender` implementation first, then the support utility:
 
-## API at a glance
+```csharp
+using Soenneker.Email.Sender.Registrars;
+using Soenneker.Email.Support.Registrars;
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `IEmailSupportUtil.Send(subject, bodyHtml, cancellationToken)` | Sends email Support. | A task that completes when the send operation is complete. |
-| `EmailSupportUtilRegistrar.AddEmailSupportUtilAsSingleton(services)` | Adds `IEmailSupportUtil` as a singleton service. | The same service collection, so additional registrations can be chained. |
-| `EmailSupportUtilRegistrar.AddEmailSupportUtilAsScoped(services)` | Adds `IEmailSupportUtil` as a scoped service. | The same service collection, so additional registrations can be chained. |
+services.AddEmailSenderAsSingleton();
+services.AddEmailSupportUtilAsSingleton();
+```
 
-## Practical notes
+`AddEmailSupportUtilAsSingleton()` registers the support utility and dispatcher as singletons. `AddEmailSupportUtilAsScoped()` registers both as scoped. Match the chosen sender lifetime: a singleton dispatcher must not capture a scoped sender.
 
-- Cancellation stops pending work; it does not undo work that has already completed.
+The dispatcher constructor requires an `IEmailSender` even when queue routing is enabled, so a sender registration is always necessary.
+
+## Send to support
+
+```csharp
+using Soenneker.Email.Support.Abstract;
+
+IEmailSupportUtil support = serviceProvider.GetRequiredService<IEmailSupportUtil>();
+
+await support.Send(
+    "Import failed",
+    "<p>The nightly customer import failed after 3 attempts.</p>",
+    cancellationToken);
+```
+
+The utility creates an HTML `EmailMessage`, puts `bodyHtml` in the `bodyText` template token, uses normal priority, and identifies the current machine as the sender. Actual delivery is immediate or queued according to `Email:UseQueue`.
+
+The HTML is not sanitized or encoded by this utility. Encode or sanitize untrusted values before including them. Completion follows dispatcher semantics: queued mode means accepted by the queue transport; direct mode means accepted by the sender. Cancellation cannot retract a message already queued or delivered.

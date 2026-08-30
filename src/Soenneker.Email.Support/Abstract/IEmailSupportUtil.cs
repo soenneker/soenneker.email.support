@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 namespace Soenneker.Email.Support.Abstract;
 
 /// <summary>
-/// A utility that allows for quick access to support email sending
+/// Sends an HTML message to the support address configured for the application.
 /// </summary>
 public interface IEmailSupportUtil
 {
     /// <summary>
-    /// Sends email Support.
+    /// Sends an HTML email to the configured support recipient through the email dispatcher.
     /// </summary>
-    /// <param name="subject">Subject for the send operation.</param>
-    /// <param name="bodyHtml">Body HTML for the send operation.</param>
+    /// <param name="subject">Email subject.</param>
+    /// <param name="bodyHtml">HTML inserted into the default email template as <c>bodyText</c>.</param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
     /// <returns>A task that completes when the send operation is complete.</returns>
     ValueTask Send(string subject, string bodyHtml, CancellationToken cancellationToken = default);
