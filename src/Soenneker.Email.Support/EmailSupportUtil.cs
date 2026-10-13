@@ -27,7 +27,7 @@ public sealed class EmailSupportUtil : IEmailSupportUtil
 
     public ValueTask Send(string subject, string bodyHtml, CancellationToken cancellationToken = default)
     {
-        var to = _configuration.GetValueStrict<string>("Email:SupportAddress");
+        var to = _configuration.GetStringStrict("Email:SupportAddress");
 
         var message = new EmailMessage
         {
