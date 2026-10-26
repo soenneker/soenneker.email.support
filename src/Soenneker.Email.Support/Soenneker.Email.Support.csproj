@@ -48,6 +48,6 @@
         <PackageReference Include="Soenneker.Email.Dispatcher" Version="4.0.505" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Soenneker.Extensions.Configuration" Version="11.0.913" />
+        <PackageReference Include="Soenneker.Extensions.Configuration" Version="11.0.914" />
     </ItemGroup>
 </Project>
